@@ -23,15 +23,23 @@ module.exports = (app) =>{
     })
 
     app.put("/api/workouts/:id" , (req,res) =>{
-        // const id = req.params.id;
-        // console.log(req.body.duration);
-        // const body = req.body;
-        // res.send("Hello!");
-        // console.log(Workout.findOne({_id: req.params.id}))
-        // Workout.findOneAndUpdate({_id: req.params.id}, {})
+        // For some reason I can't put in multiple requests on FindOne and Update
+        // SCRAPING PRETTY CODE THAT I THOUGHT WOULD WORK HERE AND GOING WITH UGLY CODE
+        // Workout.findOneAndUpdate({ _id: req.params.id }, ({$push: {exercises: req.body}},{$inc: {totalDuration: req.body.duration}})).then(updatedWorkout =>{
+        //     res.json(updatedWorkout);
+        // }).catch(err => {
+        //     res.status(400).json(err);
+        // })
 
-        Workout.findOneAndUpdate({ _id: req.params.id }, ({$push: {exercises: req.body}},{$inc: {totalDuration: req.body.duration}})).then(updatedWorkout =>{
-            res.json(updatedWorkout);
+        // UGLY CODE HERE
+        Workout.findOneAndUpdate({ _id: req.params.id }, {$push: {exercises: req.body}}).then(() =>{
+            Workout.findOneAndUpdate({ _id: req.params.id }, {$inc: {totalDuration: req.body.duration}})
+            .then(updatedWorkout =>{
+                res.json(updatedWorkout);
+            })
+            .catch(err => {
+                res.status(400).json(err);
+            })
         }).catch(err => {
             res.status(400).json(err);
         })
