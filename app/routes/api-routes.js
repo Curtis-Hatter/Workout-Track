@@ -24,11 +24,13 @@ module.exports = (app) =>{
 
     app.put("/api/workouts/:id" , (req,res) =>{
         // const id = req.params.id;
-        // console.log(req.body);
+        // console.log(req.body.duration);
         // const body = req.body;
         // res.send("Hello!");
         // console.log(Workout.findOne({_id: req.params.id}))
-        Workout.findOneAndUpdate({ _id: req.params.id }, {$push: {exercises: req.body}}).then(updatedWorkout =>{
+        // Workout.findOneAndUpdate({_id: req.params.id}, {})
+
+        Workout.findOneAndUpdate({ _id: req.params.id }, ({$push: {exercises: req.body}},{$inc: {totalDuration: req.body.duration}})).then(updatedWorkout =>{
             res.json(updatedWorkout);
         }).catch(err => {
             res.status(400).json(err);
