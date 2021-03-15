@@ -16,7 +16,15 @@ app.use(express.json());
 
 app.use(express.static("app/public"));
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", { useNewUrlParser: true });
+mongoose.connect(
+  process.env.MONGODB_URI || 'mongodb://localhost/myFirstDatabase',
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+  }
+);
 
 // db.Workout.create({ name: "Workout" })
 //   .then(WorkoutDb => {
