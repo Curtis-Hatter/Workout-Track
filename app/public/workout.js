@@ -13,7 +13,7 @@ async function initWorkout() {
       ...tallyExercises(lastWorkout.exercises)
     };
 
-    // console.log(workoutSummary.date);
+    console.log(workoutSummary.totalDuration);
     renderWorkoutSummary(workoutSummary);
   } else {
     renderNoWorkoutText()
