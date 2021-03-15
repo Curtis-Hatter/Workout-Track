@@ -92,7 +92,7 @@ module.exports = (app) =>{
         Workout.find().sort({_id:1}).then(dbWorkout =>{
             // console.log(dbWorkout);
             if(dbWorkout.length > 7){
-                console.log(dbWorkout.splice(8));
+                // console.log(dbWorkout.splice(8));
                 res.json(dbWorkout.splice(8));
             }
             else{
