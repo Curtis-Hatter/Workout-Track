@@ -7,10 +7,10 @@ const WorkoutSchema = new Schema(
             type: Date,
             default: Date.now
         },
-        totalDuration:{
-            type: Number,
-            default: 0
-        },
+        // totalDuration:{
+        //     type: Number,
+        //     default: 0
+        // },
         exercises: [{
             type: {type: String},
             name: {type: String},

@@ -3,7 +3,7 @@
 const Workout = require("../models/workout");
 // const express = require("express");
 // const app = express();
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 
 module.exports = (app) =>{
 
@@ -22,11 +22,25 @@ module.exports = (app) =>{
     // THE DURATIONS BUT RAN INTO A PROBLEM WITH TRYING TO RECONSTRUCT IT BACK OR "REWIND" (hehe) 
     // THE UNWIND OPERATION. 
     app.get("/api/workouts", (req,res) =>{
-        Workout.find().sort({_id:1}).then(dbWorkout =>{
-            res.json(dbWorkout);
-        }).catch(err => {
-            res.status(400).json(err);
-        })
+        // Workout.find().sort({_id:1}).then(dbWorkout =>{
+        //     res.json(dbWorkout);
+        // }).catch(err => {
+        //     res.status(400).json(err);
+        // })
+        Workout.aggregate(
+            [ 
+                {$addFields: {
+                    totalDuration: {$sum: "$exercises.duration"}}}
+            ],
+        function(err, result){
+            if (err) {
+              res.send(err);
+            } else {
+              res.json(result);
+            }
+          }
+        )
+
     })
 
     app.put("/api/workouts/:id" , (req,res) =>{
@@ -39,14 +53,15 @@ module.exports = (app) =>{
         // })
 
         // UGLY CODE HERE
-        Workout.findOneAndUpdate({ _id: req.params.id }, {$push: {exercises: req.body}}).then(() =>{
-            Workout.findOneAndUpdate({ _id: req.params.id }, {$inc: {totalDuration: req.body.duration}})
-            .then(updatedWorkout =>{
-                res.json(updatedWorkout);
-            })
-            .catch(err => {
-                res.status(400).json(err);
-            })
+        Workout.findOneAndUpdate({ _id: req.params.id }, {$push: {exercises: req.body}}).then((updatedWorkout) =>{
+            // Workout.findOneAndUpdate({ _id: req.params.id }, {$inc: {totalDuration: req.body.duration}})
+            // .then(updatedWorkout =>{
+            //     res.json(updatedWorkout);
+            // })
+            // .catch(err => {
+            //     res.status(400).json(err);
+            // })
+            res.json(updatedWorkout);
         }).catch(err => {
             res.status(400).json(err);
         })
@@ -58,22 +73,24 @@ module.exports = (app) =>{
     // IS ROUGH AND NOT ENOUGH EXAMPLES. STACK OVERFLOW IS TOO SPECIFIC IN QUESTIONS TO REALLY GET A GOOD
     // GRASP ON HOW TO RECONSTRUCT WHAT'S RETURN FROM THE AGGREGATE DATABASE. I GAVE UP AND JUST FOUND A WORK
     // AROUND.
-    // app.get("/sum/:id" , (req, res) => {
+    // app.get("/sum" , (req, res) => {
     //     // console.log(req.params.id)
-    //     var id = mongoose.Types.ObjectId(req.params.id);
+    //     // var id = mongoose.Types.ObjectId(req.params.id);
     //     // console.log(Workout);
     //     // ObjectId("604e90c3b993b94750211f4d")
     //     // console.log(`ObjectId(${id})`)
     //     Workout.aggregate(
     //         [ 
-    //             {$match: {_id: id} },
-    //             {$unwind: "$exercises"},
-    //             {
-    //                 $group: {
-    //                     _id: "$day",
-    //                     totalDuration: {$sum: "$exercises.duration"}
-    //                 }
-    //             }
+    //             // {$match: {_id: id} },
+    //             // {$unwind: "$exercises"},
+    //             {$addFields: {
+    //                 totalDuration: {$sum: "$exercises.duration"}}}
+    //             // {
+    //             //     $group: {
+    //             //         _id: "$day",
+    //             //         totalDuration: {$sum: "$exercises.duration"}
+    //             //     }
+    //             // }
     //             // {totalDuration: {$sum: "$duration"}}
     //             // {$group: {_id: "$day", totalDuration: {$sum: "$duration"}}}
                 
@@ -89,18 +106,33 @@ module.exports = (app) =>{
     // })
 
     app.get("/api/workouts/range", (req,res) =>{
-        Workout.find().sort({_id:1}).then(dbWorkout =>{
-            // console.log(dbWorkout);
-            if(dbWorkout.length > 7){
-                // console.log(dbWorkout.splice(8));
-                res.json(dbWorkout.splice(8));
+
+        Workout.aggregate(
+            [ 
+                {$addFields: {
+                    totalDuration: {$sum: "$exercises.duration"}}},
+                {$limit : 7}    
+            ],
+        function(err, result){
+            if (err) {
+              res.send(err);
+            } else {
+              res.json(result);
             }
-            else{
-                res.json(dbWorkout);
-            }
-        }).catch(err => {
-            res.status(400).json(err);
-        })
+          }
+        )
+        // Workout.find().sort({_id:1}).then(dbWorkout =>{
+        //     // console.log(dbWorkout);
+        //     if(dbWorkout.length > 7){
+        //         // console.log(dbWorkout.splice(8));
+        //         res.json(dbWorkout.splice(8));
+        //     }
+        //     else{
+        //         res.json(dbWorkout);
+        //     }
+        // }).catch(err => {
+        //     res.status(400).json(err);
+        // })
     })
 
 }
