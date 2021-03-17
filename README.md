@@ -1,5 +1,9 @@
 # Workout Tracker
 
+## Links
+https://intense-eyrie-43924.herokuapp.com/?id=605184690a2086001518d40f
+https://github.com/Curtis-Hatter/Workout-Track/
+
 ## Application
 An application that tracks the name, type, weight, sets, reps, and duration of exercise. If the exercise is a cardio exercise, the distance traveled.
 
